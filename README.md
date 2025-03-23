@@ -32,7 +32,7 @@ If i can get the thing to stay aloft, it can power itself down when it needs to 
 
 Then it simply needs to be made big enough to collect enough power to be able to navigate weather and time sufficiently.
 
-I'm new to aeronautics and, as one should for all projects, expect the project to change as one learns about it by pursuing it.
+As one should for all projects, I expect the project to change as one learns about it by pursuing it.
 
 ## current stage
 
