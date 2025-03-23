@@ -38,6 +38,8 @@ As one should for all projects, I expect the project to change as one learns abo
 
 - [x] stage 1: I've purchased and found sufficient supplies to work on a first prototype, cobbling things together. (helium, solar panel ...)
 - [x] stage 2: I've demonstrated I can remotely control a motor with an arduino connected to a cell phone with a usb-c hub.
-- [ ] stage 3: Prepare independent motor control hardware for the arduino, so that in stage 4 it can be programmed once and left.
+- [ ] stage 3: Prepare independent motor control hardware for the arduino, so that in an upcoming stage it can be programmed once and left.
 
-I've wired and soldered an ad-hoc general motor control system for the arduino. however, the arduino is not powering its 3v pin to 3v. I may have damaged it. The 5v pin is working fine. (oh i'll order another arduino if this one is broken but i might teleport soon). The next step for me is to put code on the arduino that can power one of the data pins, so I can verify that the motor control system responds to the arduino's logical voltage level.
+I've wired and soldered an ad-hoc general motor control system for the arduino. I failed to detect 3V on the 3V pin with the tools I had, but I've now verified that the hobby fan control board (h-bridge) will function with the logic levels of the Arduino and successfully toggled power to a motor through my control hardware. I still need to verify the relays will accept the board logic levels (I don't know them at this time), decide on a stable wiring to the pins, and bundle it together with the phone.
+
+I'll be connecting 2 pins for servos, 2 pins for the h-bridge, and 2 pins for the 2 relays, allowing control of a maximum of 2 servos and 4 motors.
