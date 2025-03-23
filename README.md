@@ -15,7 +15,9 @@ Alternatively the container of lifting gas could be made large enough to prevent
 
 ### current rough parts list
 
-I started with these parts to be findable near me or purchasable from common stores without waiting for parts delivery, for a preprototype. If the preprototype works, more appropriate parts can be ordered.
+I started with these parts to be findable near me or purchasable from common stores without waiting for parts delivery, for a preprototype.
+
+If the preprototype works, cheaper and more appropriate parts can be ordered.
 
 - helium-air mixture and mylar balloons (party supplies) to show ability to negotiate gravity
 - arduino uno found in basement
