@@ -38,8 +38,8 @@ As one should for all projects, I expect the project to change as one learns abo
 
 - [x] stage 1: I've purchased and found sufficient supplies to work on a first prototype, cobbling things together. (helium, solar panel ...)
 - [x] stage 2: I've demonstrated I can remotely control a motor with an arduino connected to a cell phone with a usb-c hub.
-- [ ] stage 3: Prepare independent motor control hardware for the arduino, so that in an upcoming stage it can be programmed once and left.
+- [x] stage 3: I've wired the relays, fan control board, and servos all together into 6 data pins on the arduino with supply and ground distribution, and shown the wiring works to control up to 4 motors and 2 servos.
+- [ ] stage 4: I plan to write simple software for the arduino to control the motors and servos via serial communication from the cell phone, and physically bundle them with it.
+- [ ] stage 5: I guess I'll see if the helium and balloons I have can lift the electronics, possibly with the solar panel, and see if I can rig the fan motor to propel them.
 
-I've wired and soldered an ad-hoc general motor control system for the arduino. I failed to detect 3V on the 3V pin with the tools I had, but I've now verified that the hobby fan control board (h-bridge) will function with the logic levels of the Arduino and successfully toggled power to a motor through my control hardware. I still need to verify the relays will accept the board logic levels (I don't know them at this time), decide on a stable wiring to the pins, and bundle it together with the phone.
-
-I'll be connecting 2 pins for servos, 2 pins for the h-bridge, and 2 pins for the 2 relays, allowing control of a maximum of 2 servos and 4 motors.
+It may be appropriate to acquire more powerful helium balloons and propulsion by or around stage 5.
