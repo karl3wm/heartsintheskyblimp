@@ -1,3 +1,6 @@
 [submodule "arduino_pigpio/pigpio"]
 	path = arduinogpio/pigpio
 	url = https://github.com/joan2937/pigpio
+[submodule "arduinogpio/libraries/Servo"]
+	path = arduinogpio/libraries/Servo
+	url = https://github.com/arduino-libraries/Servo
