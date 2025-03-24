@@ -25,32 +25,13 @@ static struct libusb_device_handle *devh = NULL;
 static int ep_in_addr  = 0x83;
 static int ep_out_addr = 0x04; // UNO
 
-int read_chars(unsigned char * data, int size)
-{
-    /* To receive characters from the device initiate a bulk_transfer to the
-     * Endpoint with address ep_in_addr.
-     */
-    int actual_length;
-    int rc = libusb_bulk_transfer(devh, ep_in_addr, data, size, &actual_length,
-                                  1000);
-    if (rc == LIBUSB_ERROR_TIMEOUT) {
-        //printf("timeout (%d)\n", actual_length);
-        return 0;
-    } else if (rc < 0) {
-        fprintf(stderr, "Error while waiting for char: %s\n", libusb_error_name(rc));
-        return -1;
-    }
-
-    return actual_length;
-}
-
 int main(int argc, char **argv)
 {
     libusb_context * ctx;
     int rc;
 
     if (argc != 2) {
-        fprintf(stderr, "Usage: termux-usb -e %s /dev/bus/usb/00?/00?\n", argv[0]);
+        fprintf(stderr, "Usage: termux-usb -e %s /dev/bus/usb/00?/00? 2>&1\n", argv[0]);
         exit(1);
     }
 
@@ -119,11 +100,11 @@ int main(int argc, char **argv)
     /* We can now start sending or receiving data to the device
      */
     unsigned char buf[1024];
-    int len, inputlen;
+    int inputlen;
 
     fcntl(0, F_SETFL, fcntl(0, F_GETFL) | O_NONBLOCK);
 
-    fprintf(stderr, "Connected.\n");
+    //fprintf(stderr, "Connected.\n");
 
     while(1) {
 	inputlen = read(0, buf, sizeof(buf));
