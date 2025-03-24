@@ -118,7 +118,7 @@ int main(int argc, char **argv)
 
     /* We can now start sending or receiving data to the device
      */
-    unsigned char buf[65];
+    unsigned char buf[1024];
     int len, inputlen;
 
     fcntl(0, F_SETFL, fcntl(0, F_GETFL) | O_NONBLOCK);
