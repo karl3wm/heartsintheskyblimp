@@ -4,6 +4,7 @@
  *
  * Author: Christophe Augier <christophe.augier@gmail.com>
  */
+// NOTE: https://www.silabs.com/documents/public/application-notes/AN758.pdf
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -23,21 +24,6 @@ static struct libusb_device_handle *devh = NULL;
  */
 static int ep_in_addr  = 0x83;
 static int ep_out_addr = 0x04; // UNO
-
-int write_char(unsigned char c)
-{
-    /* To send a char to the device simply initiate a bulk_transfer to the
-     * Endpoint with address ep_out_addr.
-     */
-    int actual_length;
-    int rc;
-    if ((rc = libusb_bulk_transfer(devh, ep_out_addr, &c, 1,
-                             &actual_length, 0)) < 0) {
-        fprintf(stderr, "Error while sending char: %s\n", libusb_error_name(rc));
-        return -1;
-    }
-    return 0;
-}
 
 int read_chars(unsigned char * data, int size)
 {
@@ -140,21 +126,40 @@ int main(int argc, char **argv)
     fprintf(stderr, "Connected.\n");
 
     while(1) {
-        while ((inputlen = read(0, buf, 1)) == 1) {
-            if (write_char(buf[0])) {
-                break;
-            }
-        }
+	inputlen = read(0, buf, sizeof(buf));
         if (inputlen < 0 && errno != EAGAIN) {
             perror("read");
             break;
         }
-        len = read_chars(buf, 64);
-        if (len == -1) { fprintf(stderr, "failed read chars\n"); break; }
-        if (len == 0) { usleep(150000); continue; }
-        buf[len] = 0;
-        fprintf(stdout, "%s", buf);
-        fflush(stdout);
+	if (inputlen > 0) {
+	    int outputlen;
+	    int rc = libusb_bulk_transfer(devh, ep_out_addr, buf, inputlen, &outputlen, 0);
+	    if (rc < 0) {
+		fprintf(stderr, "Error sending: %s\n", libusb_error_name(rc));
+		break;
+	    }
+	    if (outputlen < inputlen) {
+		fprintf(stderr, "Short send.\n");
+		break;
+	    }
+	}
+	int rc = libusb_bulk_transfer(devh, ep_in_addr, buf, sizeof(buf), &inputlen, 200);
+	if (rc < 0) {
+	    if (rc == LIBUSB_ERROR_TIMEOUT) {
+		 continue;
+	    }
+	    fprintf(stderr, "Error recieving: %s\n", libusb_error_name(rc));
+	    break;
+	}
+	rc = write(2, buf, inputlen);
+	if (rc < inputlen) {
+	    if (rc < 0) {
+                perror("read");
+	    } else {
+                fprintf(stderr, "Short write to user interface.\n");
+	    }
+	    break;
+	}
     }
 
     libusb_release_interface(devh, 0);
