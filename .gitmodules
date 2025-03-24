@@ -4,3 +4,6 @@
 [submodule "arduinogpio/libraries/Servo"]
 	path = arduinogpio/libraries/Servo
 	url = https://github.com/arduino-libraries/Servo
+[submodule "android-termux/libusb-cdc-example"]
+	path = android-termux/libusb-cdc-example
+	url = https://github.com/tytouf/libusb-cdc-example
