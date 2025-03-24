@@ -1,3 +1,5 @@
+#define ENABLE_SERVO 1
+
 #include "pigpio.h"
 #include "command.h"
 
@@ -26,7 +28,13 @@ size_t cmdbuf_offset = 0;
 #define ARDUINO_CMD_AREAD -0x1000
 #define ARDUINO_CMD_AREF  -0x1001
 
+unsigned char pinmodes[256] = { INPUT };
 unsigned char pullups[256] = { INPUT };
+
+#if ENABLE_SERVO
+#include <Servo.h>
+Servo servos[MAX_SERVOS];
+#endif
 
 enum {
   READ_COMMAND,
@@ -83,6 +91,10 @@ void runCommand()
   case PI_CMD_GDC:
     if (digitalPinToPort(cmd.p1) == NOT_A_PIN) {
       res = PI_BAD_GPIO;
+#if ENABLE_SERVO
+    } else if (servos[cmd.p1].attached()) {
+      servos[cmd.p1].detach();
+#endif
     }
     break;
   case PI_CMD_PWM:
@@ -90,6 +102,22 @@ void runCommand()
   case PI_CMD_PRRG:
     if (digitalPinToTimer(cmd.p1) == NOT_ON_TIMER) {
       res = PI_BAD_USER_GPIO;
+#if ENABLE_SERVO
+    } else if (servos[cmd.p1].attached()) {
+      servos[cmd.p1].detach();
+    }
+    break;
+  case PI_CMD_SERVO:
+  case PI_CMD_GPW:
+    if (digitalPinToTimer(cmd.p1) == NOT_ON_TIMER || cmd.p1 >= MAX_SERVOS) {
+      res = PI_BAD_USER_GPIO;
+    } else if (!servos[cmd.p1].attached()) {
+      if (cmd.cmd == PI_CMD_SERVO) {
+        servos[cmd.p1].attach(cmd.p1, 500, 2500);
+      } else {
+        res = PI_NOT_SERVO_GPIO;
+      }
+#endif
     }
     break;
   }
@@ -98,10 +126,12 @@ void runCommand()
   case PI_CMD_MODES:
     switch (cmd.p2) {
     case PI_INPUT:
+      pinmodes[cmd.p1] = pullups[cmd.p1];
       pinMode(cmd.p1, pullups[cmd.p1]);
       res = 0;
       break;
     case PI_OUTPUT:
+      pinmodes[cmd.p1] = OUTPUT;
       pinMode(cmd.p1, OUTPUT);
       res = 0;
       break;
@@ -111,7 +141,7 @@ void runCommand()
     }
     break;
   case PI_CMD_MODEG:
-    switch (pinModeGet(cmd.p1)) {
+    switch (pinmodes[cmd.p1]) {
     case INPUT:
     case INPUT_PULLUP:
       res = PI_INPUT;
@@ -123,18 +153,19 @@ void runCommand()
       res = PI_BAD_MODE;
       break;
     }
+    break;
   case PI_CMD_PUD:
     switch (cmd.p2) {
     case PI_PUD_UP:
       pullups[cmd.p1] = INPUT_PULLUP;
-      if (pinModeGet(cmd.p1) == INPUT) {
+      if (pinmodes[cmd.p1] == INPUT) {
         pinMode(cmd.p1, INPUT_PULLUP);
       }
       break;
     case PI_PUD_DOWN:
-    case PI_PUD_OFF: // unsure which one the pi does
+    case PI_PUD_OFF: // unsure which one the arduino does
       pullups[cmd.p1] = INPUT;
-      if (pinModeGet(cmd.p1) == INPUT_PULLUP) {
+      if (pinmodes[cmd.p1] == INPUT_PULLUP) {
         pinMode(cmd.p1, INPUT);
       }
     default:
@@ -161,6 +192,7 @@ void runCommand()
   #endif
   case PI_CMD_PWM:
     if (cmd.p2 >= 0 && cmd.p2 < 256) {
+      pinmodes[cmd.p1] = OUTPUT;
       analogWrite(cmd.p1, cmd.p2);
       res = 0;
     } else {
@@ -171,6 +203,15 @@ void runCommand()
   case PI_CMD_PRRG:
     res = 255;
     break;
+  #if ENABLE_SERVO
+  case PI_CMD_SERVO:
+    servos[cmd.p1].writeMicroseconds(cmd.p2);
+    res = 0;
+    break;
+  case PI_CMD_GPW:
+    res = servos[cmd.p1].readMicroseconds();
+    break;
+  #endif
   default:
     res = PI_UNKNOWN_COMMAND;
     break;
@@ -188,25 +229,4 @@ void writeCommand() {
     ++ cmdbuf_offset;
   }
   mode = READ_COMMAND;
-}
-
-uint8_t pinModeGet(uint8_t pin)
-{
-  uint8_t bit = digitalPinToBitMask(pin);
-  uint8_t port = digitalPinToPort(pin);
-  volatile uint8_t *reg, *out;
-
-  if (port == NOT_A_PIN) return INPUT;
-
-	// JWS: can I let the optimizer do this?
-	reg = portModeRegister(port);
-	out = portOutputRegister(port);
-
-	if (*reg & bit) {
-		return OUTPUT;
-	} else if (*out & bit) {
-		return INPUT_PULLUP;
-	} else {
-		return INPUT;
-	}
 }
