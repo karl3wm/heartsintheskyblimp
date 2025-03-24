@@ -64,10 +64,16 @@ void readCommand()
   if (b == -1) {
     return;
   }
+  Serial.println("readCommand!");
 
   cmdbuf[cmdbuf_offset] = b;
   ++ cmdbuf_offset;
+  Serial.println(cmdbuf_offset);
   if (cmdbuf_offset < sizeof(cmdCmd_t)) {
+    return;
+  }
+  if (cmd.ext_len < 0 || cmd.ext_len > sizeof(cmd.ext)) {
+    cmdbuf_offset = 0;
     return;
   }
   if (cmdbuf_offset < sizeof(cmdCmd_t) + cmd.ext_len) {
@@ -75,6 +81,7 @@ void readCommand()
   }
   cmdbuf_offset = 0;
 
+  Serial.println("run");
   runCommand();
 }
 
@@ -222,11 +229,15 @@ void runCommand()
 }
 
 void writeCommand() {
-  while (cmdbuf_offset < sizeof(cmdCmd_t) + cmd.ext_len) {
-    if (Serial.write(cmdbuf[cmdbuf_offset]) < 1) {
-      return;
-    }
-    ++ cmdbuf_offset;
+  Serial.println("write start");
+  size_t len;
+  if (cmd.ext_len > 0 && cmd.ext_len < sizeof(cmd.ext)) {
+    len = sizeof(cmdCmd_t) + cmd.ext_len;
+  } else {
+    len = sizeof(cmdCmd_t);
   }
+  for (size_t i = 0; i < len; ++i) cmdbuf[i] = 'A';
+  Serial.write(cmdbuf, len);
+  Serial.println("write end");
   mode = READ_COMMAND;
 }
