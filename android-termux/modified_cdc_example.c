@@ -104,7 +104,7 @@ int main(int argc, char **argv)
 
     fcntl(0, F_SETFL, fcntl(0, F_GETFL) | O_NONBLOCK);
 
-    //fprintf(stderr, "Connected.\n");
+    fprintf(stderr, "Connected.\n");
 
     while(1) {
 	inputlen = read(0, buf, sizeof(buf));
