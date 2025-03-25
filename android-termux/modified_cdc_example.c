@@ -31,7 +31,7 @@ int main(int argc, char **argv)
     int rc;
 
     if (argc != 2) {
-        fprintf(stderr, "Usage: termux-usb -e %s /dev/bus/usb/00?/00? 2>&1\n", argv[0]);
+        fprintf(stderr, "Usage: termux-usb -e %s /dev/bus/usb/00?/00? 3>&1\n", argv[0]);
         exit(1);
     }
 
@@ -132,10 +132,10 @@ int main(int argc, char **argv)
 	    fprintf(stderr, "Error recieving: %s\n", libusb_error_name(rc));
 	    break;
 	}
-	rc = write(2, buf, inputlen);
+	rc = write(3, buf, inputlen);
 	if (rc < inputlen) {
 	    if (rc < 0) {
-                perror("read");
+                perror("write");
 	    } else {
                 fprintf(stderr, "Short write to user interface.\n");
 	    }
