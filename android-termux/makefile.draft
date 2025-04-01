@@ -1,0 +1,4 @@
+install:
+	apt-get install jq tmate clang termux-api
+	mkdir -p $$HOME/.termux/boot
+	cp -v heartsinthesky.tmate.boot $$HOME/.termux/boot
