@@ -1,4 +1,17 @@
-install:
+install: build_pigpio/install_manifest.txt modified_cdc_example
 	apt-get install jq tmate clang termux-api socat
 	mkdir -p $$HOME/.termux/boot
 	cp -v heartsinthesky.tmate.boot $$HOME/.termux/boot
+modified_cdc_example:
+	apt-get install -y clang libusb
+	cc -o modified_cdc_example modified_cdc_example.c -lusb-1.0 -O2 -std=c99 -Wall
+build_pigpio/install_manifest.txt: build_pigpio/pigs
+	cd build_pigpio && make && make install && cp -va "$$PREFIX"/man/. -va "$$PREFIX"/share/man/. && rm -rf "$$PREFIX"/man || rm -rf build_pigpio/install_manifest.txt
+	@echo ''
+	@echo "pigs h for help"
+	@echo ''
+build_pigpio/pigs:
+	git submodule update --init --recursive --filter=blob:none ../arduinogpio/pigpio
+	mkdir build_pigpio
+	cd build_pigpio
+	cmake ../../arduinogpio/pigpio -DCMAKE_INSTALL_PREFIX="$$PREFIX" -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_FLAGS='-Wno-deprecated-non-prototype -include strings.h -include netinet/in.h -Dpthread_cancel\(th\)=ENOSYS -DPTHREAD_CANCEL_DISABLE=1 -Dpthread_setcancelstate\(st,o_st\)=\(\(void\)\(st\),o_st?*\(int*\)\(o_st\)=PTHREAD_CANCEL_DISABLE:0,ENOSYS\)'
