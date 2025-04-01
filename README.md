@@ -36,6 +36,19 @@ As one should for all projects, I expect the project to change as one learns abo
 
 ## current stage
 
+It doesn't look like this project is advancing right now.
+
+Options for continuing:
+1. Either mount the servos sideways with limited range of motion, or fix them and the incorrect mounting of the fan on them. I thought I was fixing the fan mounting but actually worsened it. Or,
+2. Address back-EMF issues for the relays and motors, maybe with flyback diodes. Or,
+3. Pursue an improved or modify an existing design with clearer plans for connecting actuators.
+
+Right now this project seems to have been reducing with some aggression, but I could return to it.
+
+Older stage list:
+
+The primary present issue is that the servos are misconnected and misbehaving. They are not strictly required for a proof of concept. Alternatively, addressing back-EMF from the relays and motors could be addressed to move forea
+
 - [x] stage 1: I've purchased and found sufficient supplies to work on a first prototype, cobbling things together. (helium, solar panel ...)
 - [x] stage 2: I've demonstrated I can remotely control a motor with an arduino connected to a cell phone with a usb-c hub.
 - [ ] stage 3: I've wired the relays, fan control board, and servos all together into 6 data pins on the arduino with supply and ground distribution, and shown the wiring works to control up to 4 motors and 2 servos. However, I need to update the wiring to separate the motor power from the arduino's USB link better.
